@@ -6,6 +6,7 @@ const {
 } = require('../middlewares/validator');
 const {
   login,
+  logout,
   createUser,
 } = require('../controllers/users');
 const auth = require('../middlewares/auth');
