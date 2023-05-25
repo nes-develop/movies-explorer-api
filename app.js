@@ -14,12 +14,7 @@ const { corsOptions } = require('./middlewares/allowedCors');
 const { limiter } = require('./middlewares/rateLimit');
 const router = require('./routes');
 
-const {
-  PORT = 3000,
-  NODE_ENV,
-  MONGODB_ADDRESS,
-} = process.env;
-const mongoDBAddress = NODE_ENV === 'production' ? MONGODB_ADDRESS : 'mongodb://127.0.0.1:27017/moviesexplorerdb';
+const { mongoDBAddress, PORT } = require('./utils/constants');
 
 const app = express();
 

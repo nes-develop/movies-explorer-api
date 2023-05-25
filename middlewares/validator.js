@@ -6,7 +6,7 @@ module.exports.validationPostMovie = celebrate({
     country: Joi.string().required(),
     director: Joi.string().required(),
     duration: Joi.number().required(),
-    year: Joi.number().required(),
+    year: Joi.string().required(),
     description: Joi.string().required(),
     image: Joi.string().custom(isUrlValid).required(),
     trailerLink: Joi.custom(isUrlValid).required(),
@@ -51,11 +51,7 @@ module.exports.validationSignup = celebrate({
         .required(),
       name: Joi.string()
         .min(2)
-        .max(30),
-      about: Joi.string()
-        .min(2)
-        .max(30),
-      avatar: Joi.string()
-        .custom(isUrlValid),
+        .max(30)
+        .required(),
     }),
 });

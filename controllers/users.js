@@ -11,6 +11,7 @@ const {
   NOT_FOUND_ERROR_MESSAGE,
   CONFLICT_ERROR_MESSAGE,
   CONFLICT_ERROR,
+  messageLogout,
 } = require('../errors/errors');
 
 module.exports.getUsersMe = async (req, res, next) => {
@@ -63,6 +64,10 @@ module.exports.updateUser = async (req, res, next) => {
       return res.status(BAD_REQUEST_ERROR)
         .json({ message: BAD_REQUEST_MESSAGE });
     }
+    if (err.code === 11000) {
+      return res.status(CONFLICT_ERROR)
+        .json({ message: CONFLICT_ERROR_MESSAGE });
+    }
     return next(err);
   }
 };
@@ -81,11 +86,11 @@ module.exports.createUser = async (req, res, next) => {
       name,
     });
 
-    if (!email || !password) {
-      res.status(BAD_REQUEST_ERROR)
-        .send
-        .json({ message: BAD_REQUEST_MESSAGE });
-    }
+    // if (!email || !password) {
+    //   res.status(BAD_REQUEST_ERROR)
+    //     .send
+    //     .json({ message: BAD_REQUEST_MESSAGE });
+    // }
     return res.status(CREATED)
       .json({
         _id: user._id,
@@ -112,10 +117,10 @@ module.exports.login = async (req, res, next) => {
       password,
     } = req.body;
 
-    if (!email || !password) {
-      res.status(BAD_REQUEST_ERROR)
-        .json({ message: BAD_REQUEST_MESSAGE });
-    }
+    // if (!email || !password) {
+    //   res.status(BAD_REQUEST_ERROR)
+    //     .json({ message: BAD_REQUEST_MESSAGE });
+    // }
     const user = await User.findOne({ email })
       .select('password');
 
@@ -138,4 +143,14 @@ module.exports.login = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+module.exports.logout = (req, res) => {
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    sameSite: 'None',
+    secure: true,
+  }).send({ message: messageLogout })
+    // eslint-disable-next-line no-undef
+    .catch(next);
 };

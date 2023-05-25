@@ -16,3 +16,5 @@ module.exports.CONFLICT_ERROR_MESSAGE = 'Пользователь с таким 
 module.exports.CREATED = 201;
 module.exports.OK = 200;
 module.exports.DELETED_SUCCESS = 'Deleted successfully';
+
+module.exports.messageLogout = 'Вы вышли!';

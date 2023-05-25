@@ -30,6 +30,8 @@ router.use(auth);
 router.use('/users', userRouter);
 router.use('/movies', movieRouter);
 
+router.post('/signout', logout);
+
 router.use('*', (req, res) => res.status(NOT_FOUND_ERROR)
   .json({ message: 'Произошла ошибка, передан некорректный путь' }));
 

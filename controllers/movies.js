@@ -13,7 +13,9 @@ const {
 
 module.exports.getMovies = async (req, res, next) => {
   try {
-    const movies = await Movie.find({});
+    const ownerId = req.user._id;
+
+    const movies = await Movie.find({ owner: ownerId, ...req.body });
 
     return res.status(OK)
       .json(movies);
