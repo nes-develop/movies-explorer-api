@@ -1,42 +1,45 @@
-require('dotenv')
-  .config();
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const { errors } = require('celebrate');
-const cors = require('cors');
 const helmet = require('helmet');
-const {
-  requestLogger,
-  errorLogger,
-} = require('./middlewares/logger');
-const { errorHandler } = require('./helpers/errorHandler');
-const { corsOptions } = require('./middlewares/allowedCors');
-const { limiter } = require('./middlewares/rateLimit');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+const setErrors = require('./middlewares/setErrors');
+// const limiter = require('./middlewares/limiter');
 const router = require('./routes');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { BASEADRESS_DEV } = require('./utils/constants');
 
-const { mongoDBAddress, PORT } = require('./utils/constants');
-
+const { NODE_ENV, BASEADRESS, PORT = 3000 } = process.env;
 const app = express();
 
+const options = {
+  origin: [
+    'http://nazarov.student.nomoredomains.monster',
+    'https://nazarov.student.nomoredomains.monster',
+    'http://localhost:3000',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
+
+app.use('*', cors(options));
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(cors(corsOptions));
-
-app.use(requestLogger);
-app.use(limiter);
+app.use(cookieParser());
 app.use(helmet());
 
+app.use(requestLogger);
+// app.use(limiter);
 app.use(router);
-
 app.use(errorLogger);
 app.use(errors());
-app.use(errorHandler);
+app.use(setErrors);
 
-mongoose.connect(mongoDBAddress, {
-  useNewUrlParser: true,
-}, () => {
-  app.listen(PORT, () => {
+mongoose.connect('mongodb://127.0.0.1/bitfilmsdb'/* NODE_ENV === 'production' ? BASEADRESS : BASEADRESS_DEV */, { useNewUrlParser: true })
+  .then(app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
-  });
-});
+  }))
+  .catch((err) => console.log(err));

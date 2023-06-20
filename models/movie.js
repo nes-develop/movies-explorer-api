@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const { regex } = require('../utils/constants');
 
-const { Schema } = mongoose;
-
-const movieSchema = new Schema({
+const movieSchema = new mongoose.Schema({
   country: {
     type: String,
     required: true,
@@ -28,24 +26,30 @@ const movieSchema = new Schema({
     type: String,
     required: true,
     validate: {
-      validator: (value) => validator.isURL(value),
-      message: 'Введенная ссылка не соответствует необходимому формату',
+      validator(url) {
+        return regex.test(url);
+      },
+      message: 'Некорректный URL',
     },
   },
   trailerLink: {
     type: String,
     required: true,
     validate: {
-      validator: (value) => validator.isURL(value),
-      message: 'Введенная ссылка не соответствует необходимому формату',
+      validator(url) {
+        return regex.test(url);
+      },
+      message: 'Некорректный URL',
     },
   },
   thumbnail: {
     type: String,
     required: true,
     validate: {
-      validator: (value) => validator.isURL(value),
-      message: 'Введенная ссылка не соответствует необходимому формату',
+      validator(url) {
+        return regex.test(url);
+      },
+      message: 'Некорректный URL',
     },
   },
   owner: {

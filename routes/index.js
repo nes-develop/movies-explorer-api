@@ -1,39 +1,21 @@
-const router = require('express')
-  .Router();
-const {
-  validationSignin,
-  validationSignup,
-} = require('../middlewares/validator');
-const {
-  login,
-  logout,
-  createUser,
-} = require('../controllers/users');
+const router = require('express').Router();
 const auth = require('../middlewares/auth');
-const userRouter = require('./users');
-const movieRouter = require('./movies');
-const { NOT_FOUND_ERROR } = require('../errors/errors');
+const { createUser, login, logout } = require('../controllers/users');
+const { NotFound } = require('../errors/allErrors');
+const { validationCreateUser, validationLogin } = require('../utils/validationRequest');
 
-router.post(
-  '/signin',
-  validationSignin,
-  login,
-);
-
-router.post(
-  '/signup',
-  validationSignup,
-  createUser,
-);
+router.post('/signin', validationLogin, login);
+router.post('/signup', validationCreateUser, createUser);
 
 router.use(auth);
 
-router.use('/users', userRouter);
-router.use('/movies', movieRouter);
+router.use('/users', require('./users'));
+router.use('/movies', require('./movies'));
 
 router.post('/signout', logout);
 
-router.use('*', (req, res) => res.status(NOT_FOUND_ERROR)
-  .json({ message: 'Произошла ошибка, передан некорректный путь' }));
+router.use('*', (req, res, next) => {
+  next(new NotFound('Cтраницы не сушествует'));
+});
 
 module.exports = router;
